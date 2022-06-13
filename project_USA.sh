@@ -24,6 +24,3 @@
  else
     echo try again
 fi
-
-source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2018_mm.root m_vis mm earlyRun3
-source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2018_ee.root m_vis ee earlyRun3
