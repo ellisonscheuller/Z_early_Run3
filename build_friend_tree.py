@@ -21,8 +21,8 @@ def friend_producer(rfile, dataset_proc):
     # HERE
     # output_path = rfile.replace("ntuples", "friends/crosssection")
     output_path = rfile.replace(
-        "/storage/gridka-nrg/moh/CROWN_samples/EarlyRun3_V02/CROWNRun",
-        "/ceph/moh/CROWN_samples/EarlyRun3_V02/friends/crosssection",
+        "/ceph/moh/CROWN_samples/EarlyRun3_V04/ntuples",
+        "/ceph/moh/CROWN_samples/EarlyRun3_V04/friends/crosssection",
     )
 
     if os.path.exists(output_path):
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # base_path = "/ceph/rschmieder/run3/CROWN_tutorial/ntuples/2018/*/*/*.root"
     # dataset = yaml.load(open("dataset_tut.yml"), Loader=yaml.Loader)
 
-    base_path = "/storage/gridka-nrg/moh/CROWN_samples/EarlyRun3_V02/CROWNRun/2018/*/*/*.root"
+    base_path = "/ceph/moh/CROWN_samples/EarlyRun3_V04/ntuples/2018/*/*/*.root"
     dataset = yaml.load(open("datasets.yaml"), Loader=yaml.Loader)
 
     ntuples = glob.glob(base_path)

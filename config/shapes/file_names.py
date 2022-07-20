@@ -64,7 +64,7 @@ common_files_2018_UL = {
         "TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
         "TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_RunIISummer20UL18NanoAODv9-106X",
 
-        # "TTToHadronic_TuneCP5_13TeV-powheg-pythia8",
+        # "TTToHadronic_TuneCP5_13TeV-powheg-pythia8",s
     ],
     # "VV": [
     #     # "WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8",
@@ -80,12 +80,9 @@ common_files_2018_UL = {
     #     # "ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8",
     # ],
     "W": [
-        "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8_RunIISummer20UL18NanoAODv9-106X",
-
-        # "W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-        # "W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-        # "W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
-        # "W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8",
+        "WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        "WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL18NanoAODv9-106X",
+        "WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIISummer20UL18NanoAODv9-106X",
     ],
 }
 
@@ -94,10 +91,37 @@ files = {
         "mm": dict(
             {
                 "data": [
-                    "SingleMuon_Run2018A-UL2018",
-                    "SingleMuon_Run2018B-UL2018",
-                    "SingleMuon_Run2018C-UL2018",
-                    "SingleMuon_Run2018D-UL2018",
+                    "SingleMuon_Run2022B_355094_355680",
+                ],
+            },
+            **common_files_2018_UL
+        ),
+        "ee": dict(
+            {
+                "data": [
+                    "EGamma_Run2018A-UL2018",
+                    "EGamma_Run2018B-UL2018",
+                    "EGamma_Run2018C-UL2018",
+                    "EGamma_Run2018D-UL2018",
+                ],
+            },
+            **common_files_2018_UL
+        ),
+        "mmet": dict(
+            {
+                "data": [
+                    "SingleMuon_Run2022B_355094_355400",
+                ],
+            },
+            **common_files_2018_UL
+        ),
+        "emet": dict(
+            {
+                "data": [
+                    "EGamma_Run2018A-UL2018",
+                    "EGamma_Run2018B-UL2018",
+                    "EGamma_Run2018C-UL2018",
+                    "EGamma_Run2018D-UL2018",
                 ],
             },
             **common_files_2018_UL
