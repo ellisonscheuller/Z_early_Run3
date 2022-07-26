@@ -97,6 +97,8 @@ def main(info):
     channel = info["channel"]
     channel_dict = {
         "ee": "#font[42]{#scale[0.85]{ee}}",
+        "emet": "#scale[0.85]{e} met",
+        "mmet": "#mu met",
         "em": "#scale[0.85]{e}#mu",
         "et": "#font[42]{#scale[0.85]{e}}#tau_{#font[42]{h}}",
         "mm": "#mu#mu",
@@ -111,10 +113,10 @@ def main(info):
         else:
             split_value = 101
 
-    split_dict = {c: split_value for c in ["et", "mt", "tt", "em", "mm"]}
+    split_dict = {c: split_value for c in ["et", "mt", "tt", "em", "mm", "ee", "mmet", "emet"]}
 
     bkg_processes = [
-        "VVL",
+        #"VVL",
         "TTL",
         "ZL",
         "jetFakesEMB",
@@ -128,7 +130,7 @@ def main(info):
         bkg_processes = ["VVT", "VVL", "TTT", "TTL", "ZL", "jetFakes", "ZTT"]
     if not args.embedding and not args.fake_factor:
         bkg_processes = [
-            "VVL",
+            #"VVL",
             "W",
             "TTL",
             "ZL",
@@ -141,7 +143,7 @@ def main(info):
             bkg_processes = ["VVT", "VVL", "TTT", "TTL", "ZL", "ZTT"]
         if not args.embedding and not args.fake_factor:
             bkg_processes = [
-                "VV",
+                #"VV",
                 "W",
                 "TTT",
                 "TTL",
@@ -179,8 +181,20 @@ def main(info):
             if args.embedding:
                 bkg_processes = ["VVL", "W", "TTL", "ZL", "EMB"]
 
-    if "mm" in channel:
-        bkg_processes = ["VVL", "W", "TTL", "ZL"]
+    if "mmet" in channel:
+        #bkg_processes = ["ZL", "TTL"]
+        bkg_processes = ["ZL", "TTL", "W"]
+        # bkg_processes = ["VVL", "W", "TTL", "ZL"]
+    elif "emet" in channel:
+        bkg_processes = ["ZL", "TTL", "W"]
+        # bkg_processes = ["VVL", "W", "TTL", "ZL"]
+    elif "mm" in channel:
+        bkg_processes = ["W", "TTL", "ZL"]
+        #bkg_processes = ["W", "TTL", "ZL"]
+        # bkg_processes = ["VVL", "W", "TTL", "ZL"]
+    elif "ee" in channel:
+        bkg_processes = ["W", "TTL", "ZL"]
+        # bkg_processes = ["VVL", "W", "TTL", "ZL"]
 
     legend_bkg_processes = copy.deepcopy(bkg_processes)
     legend_bkg_processes.reverse()
@@ -246,7 +260,7 @@ def main(info):
         "data_obs",
     )
     data_norm = plot.subplot(0).get_hist("data_obs").Integral()
-    plot.subplot(0).get_hist("data_obs").GetXaxis().SetMaxDigits(4)
+    #plot.subplot(0).get_hist("data_obs").GetXaxis().SetMaxDigits(4)
     if args.blinded:
         plot.subplot(0).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
         plot.subplot(0).setGraphStyle("data_obs", "e0", markersize=0, linewidth=0)
@@ -281,12 +295,34 @@ def main(info):
     )
 
     plot.subplot(2).setYlims(0.75, 1.55)
-    if channel == "mm":
+    if channel == "mmet":
+        #plot.subplot(0).setLogY()
+        #ymax = plot.subplot(0).get_hist("355206").GetMaximum()
+        #plot.subplot(0).setYlims(0, ymax*1.5)
+        plot.subplot(0).setYlims(0, 0.1)
+        # plot.subplot(0).setXlims(50, 150)
+        # plot.subplot(1).setXlims(50, 150)
+        # plot.subplot(2).setXlims(50, 150)
+    elif channel == "emet":
         plot.subplot(0).setLogY()
         plot.subplot(0).setYlims(1, 8 * 10**10)
-        plot.subplot(0).setXlims(50, 150)
-        plot.subplot(1).setXlims(50, 150)
-        plot.subplot(2).setXlims(50, 150)
+        # plot.subplot(0).setXlims(50, 150)
+        # plot.subplot(1).setXlims(50, 150)
+        # plot.subplot(2).setXlims(50, 150)
+    elif channel == "mm":
+        #plot.subplot(0).setLogY()
+        #ymax = plot.subplot(0).get_hist("355206").GetMaximum()
+        #plot.subplot(0).setYlims(0, ymax*1.5)
+        plot.subplot(0).setYlims(0, 0.4)
+        # plot.subplot(0).setXlims(50, 150)
+        # plot.subplot(1).setXlims(50, 150)
+        # plot.subplot(2).setXlims(50, 150)
+    elif channel == "ee":
+        plot.subplot(0).setLogY()
+        plot.subplot(0).setYlims(1, 8 * 10**10)
+        # plot.subplot(0).setXlims(50, 150)
+        # plot.subplot(1).setXlims(50, 150)
+        # plot.subplot(2).setXlims(50, 150)
 
     if args.linear != True:
         plot.subplot(1).setYlims(0.1, split_dict[channel])

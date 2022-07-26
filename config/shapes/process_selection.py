@@ -35,20 +35,49 @@ def lumi_weight(era):
 
 
 def MC_base_process_selection(channel, era):
-    MC_base_process_weights = [
-        ("puweight", "puweight"),
-        ("id_wgt_mu_1*id_wgt_mu_2", "idweight"),
-        ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
-        ("crossSectionPerEventWeight", "crossSectionPerEventWeight"),
-        lumi_weight(era),
-    ]
-    return Selection(name="MC base", weights=MC_base_process_weights)
+    if channel in ["mmet"]:
+        MC_base_process_weights = [
+            ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_mu_1", "idweight"),
+            ("iso_wgt_mu_1", "isoweight"),
+            #("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            lumi_weight(era),
+        ]
+        return Selection(name="MC base", weights=MC_base_process_weights)
+    elif channel in ["emet"]:
+        MC_base_process_weights = [
+            ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_ele_wpmedium_1", "idweight"),
+            #("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            lumi_weight(era),
+        ]
+        return Selection(name="MC base", weights=MC_base_process_weights)
+    elif channel in ["mm"]:
+        MC_base_process_weights = [
+            ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_mu_1*id_wgt_mu_2", "idweight"),
+            ("iso_wgt_mu_1*iso_wgt_mu_2", "isoweight"),
+            #("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            lumi_weight(era),
+        ]
+        return Selection(name="MC base", weights=MC_base_process_weights)
+    elif channel in ["ee"]:
+        MC_base_process_weights = [
+            ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_ele_wpmedium_1*id_wgt_ele_wpmedium_2", "idweight"),
+            #("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            lumi_weight(era),
+        ]
+        return Selection(name="MC base", weights=MC_base_process_weights)
 
 
 def DY_process_selection(channel, era):
     DY_process_weights = MC_base_process_selection(channel, era).weights
     return Selection(name="DY", weights=DY_process_weights)
-
 
 def TT_process_selection(channel, era):
     TT_process_weights = MC_base_process_selection(channel, era).weights

@@ -17,6 +17,7 @@ from ntuple_processor import (
 )
 
 from config.shapes.channel_selection import channel_selection
+from config.shapes.channel_selection import data_only_channel_selection
 from config.shapes.file_names import files
 from config.shapes.process_selection import (
     DY_process_selection,
@@ -87,11 +88,32 @@ def parse_arguments():
         help="Directories arranged as Artus output and containing a friend tree for tt.",
     )
     parser.add_argument(
+        "--mmet-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for mmet.",
+    )
+    parser.add_argument(
+        "--emet-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for emet.",
+    )
+    parser.add_argument(
         "--mm-friend-directory",
         type=str,
         default=[],
         nargs="+",
-        help="Directories arranged as Artus output and containing a friend tree for tt.",
+        help="Directories arranged as Artus output and containing a friend tree for mm.",
+    )
+    parser.add_argument(
+        "--ee-friend-directory",
+        type=str,
+        default=[],
+        nargs="+",
+        help="Directories arranged as Artus output and containing a friend tree for ee.",
     )
     parser.add_argument(
         "--em-friend-directory",
@@ -172,6 +194,9 @@ def main(args):
     # Parse given arguments.
     friend_directories = {
         "mm": args.mm_friend_directory,
+        "ee": args.ee_friend_directory,
+        "mmet": args.mmet_friend_directory,
+        "emet": args.emet_friend_directory,
     }
 
     if ".root" in args.output_file:
@@ -193,8 +218,13 @@ def main(args):
             if re.match("(gg|qq|tt|w|z|v)h", dataset.lower()):
                 if "FakeFactors" in friend or "EMQCDWeights" in friend:
                     return False
+                #elif "jdriesch" in friend:
+                    #return False
             elif re.match("data", dataset.lower()):
                 if "crosssection" in friend:
+                    return False
+            elif not re.match("dy", dataset.lower()):
+                if "metcorr" in friend:
                     return False
             return True
 
@@ -233,7 +263,9 @@ def main(args):
             "data": [
                 Unit(
                     datasets["data"],
-                    [channel_selection(channel, era)],
+                    [
+                        data_only_channel_selection(channel, era)
+                        ],
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
@@ -271,21 +303,21 @@ def main(args):
                     ],
                 )
             ],
-            "vvl": [
-                Unit(
-                    datasets["VV"],
-                    [
-                        channel_selection(channel, era),
-                        VV_process_selection(channel, era),
-                        VVL_process_selection(channel),
-                    ],
-                    [
-                        control_binning[channel][v]
-                        for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
-                    ],
-                )
-            ],
+            #"vvl": [
+            #    Unit(
+            #        datasets["VV"],
+            #        [
+            #            channel_selection(channel, era),
+            #            VV_process_selection(channel, era),
+            #            VVL_process_selection(channel),
+            #        ],
+            #        [
+            #            control_binning[channel][v]
+            #            for v in set(control_binning[channel].keys())
+            #            & set(args.control_plot_set)
+            #        ],
+            #    )
+            #],
             "w": [
                 Unit(
                     datasets["W"],
@@ -320,7 +352,7 @@ def main(args):
             "data",
             "zl",
             "ttl",
-            "vvl",
+            #"vvl",
             "w",
         }
     else:
@@ -332,7 +364,25 @@ def main(args):
         "mm": {
             "zl",
             "ttl",
-            "vvl",
+            #"vvl",
+            "w",
+        },
+        "ee": {
+            "zl",
+            "ttl",
+            # "vvl",
+            "w",
+        },
+        "mmet": {
+            "zl",
+            "ttl",
+            # "vvl",
+            "w",
+        },
+        "emet": {
+            "zl",
+            "ttl",
+            # "vvl",
             "w",
         }
     }
