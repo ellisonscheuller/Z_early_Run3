@@ -46,8 +46,8 @@ def parse_arguments():
     )
     parser.add_argument(
         "--match_data", 
-        default = True,
-        action="store_true", 
+        type=str,
+        default="True",
         help=""
     )
     parser.add_argument(
@@ -293,17 +293,16 @@ def main(info):
             
         #plot.create_stack(run_list, "data_stack")
 
-        counter = 1
+        draw_list = list()
 
         for i in run_list:
-            counter+=1
-            if args.match_data:
+            if args.match_data == "True":
                 data_norm = plot.subplot(0).get_hist(i).Integral()
-                print("HERE IS THE INTEGRAL OF RUN " + i + ":" + str(data_norm))
-                print("HELLO MY NAME IS ELDER PRICE")
+                entry_number = plot.subplot(0).get_hist(i).GetEntries()
+                if entry_number > 50:
+                    print(str(entry_number) + " " + i)
+                    draw_list.append(i)
                 mc_norm = plot.subplot(0).get_hist("total_bkg").Integral()
-                print("data_norm: ", data_norm)
-                print("mc_norm:   ", mc_norm)
                 assert mc_norm > 0.
                 plot.subplot(0).get_hist("total_bkg").Scale(1/mc_norm)
                 plot.subplot(1).get_hist("total_bkg").Scale(1/mc_norm)
@@ -316,10 +315,13 @@ def main(info):
                     plot.subplot(0).get_hist(_proc).Scale(1/mc_norm)
                     plot.subplot(1).get_hist(_proc).Scale(1/mc_norm)
                     plot.subplot(2).get_hist(_proc).Scale(1/mc_norm)
-                print("HERE IS IT, ", plot.subplot(0).get_hist("total_bkg").Integral())
             else:
                 #data_norm = plot.subplot(0).get_hist(i).Integral()
                 plot.subplot(0).get_hist(i).GetXaxis().SetMaxDigits(4) 
+                entry_number = plot.subplot(0).get_hist(i).GetEntries()
+                if entry_number > 50:
+                    print(str(entry_number) + " " + i)
+                    draw_list.append(i)
             if args.blinded:
                 plot.subplot(0).setGraphStyle(i, "e0", markercolor=styles.color_dict[i], markersize=0, linewidth=0)
                 plot.subplot(0).setGraphStyle(i, "e0", markercolor=styles.color_dict[i], markersize=0, linewidth=0)
@@ -346,10 +348,7 @@ def main(info):
                     split_dict[channel] * 2,
                 ),
             )
-        """efficiency_list = []
-        for i in run_list:
-            efficiency_list.append("efficiency_"+i)
-        plot.create_stack(efficiency_list, "efficiency_stack")"""
+
     plot.subplot(2).normalize(["total_bkg"], "total_bkg")
     plot.setGraphStyle(
         "total_bkg", "e2", markersize=0, fillcolor=styles.color_dict["unc"], linecolor=0
@@ -400,27 +399,42 @@ def main(info):
         #plot.subplot(0).setLogY()
         #ymax = plot.subplot(0).get_hist("355206").GetMaximum()
         #plot.subplot(0).setYlims(0, ymax*1.5)
-        plot.subplot(0).setYlims(0, 200)
+        ymax_list = list()
+        for i in run_list:
+            ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
+        ymax = max(ymax_list)
+        plot.subplot(0).setYlims(0, ymax*1.7)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
     elif channel == "emet":
-        plot.subplot(0).setLogY()
-        plot.subplot(0).setYlims(1, 8 * 10**10)
+        #plot.subplot(0).setLogY()
+        ymax_list = list()
+        for i in run_list:
+            ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
+        ymax = max(ymax_list)
+        plot.subplot(0).setYlims(0, ymax*1.7)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
     elif channel == "mm":
         #plot.subplot(0).setLogY()
-        #ymax = plot.subplot(0).get_hist("355206").GetMaximum()
-        #plot.subplot(0).setYlims(0, ymax*1.5)
-        plot.subplot(0).setYlims(0, 0.4)
+        ymax_list = list()
+        for i in run_list:
+            ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
+        ymax = max(ymax_list)
+        plot.subplot(0).setYlims(0, ymax*1.7)
+        #plot.subplot(0).setYlims(0, 1)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
     elif channel == "ee":
-        plot.subplot(0).setLogY()
-        plot.subplot(0).setYlims(1, 8 * 10**10)
+        #plot.subplot(0).setLogY()
+        ymax_list = list()
+        for i in run_list:
+            ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
+        ymax = max(ymax_list)
+        plot.subplot(0).setYlims(0, ymax*1.7)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
@@ -461,14 +475,35 @@ def main(info):
             plot.subplot(1).Draw(["stack", "total_bkg", "data_obs"])
         plot.subplot(2).Draw(["total_bkg", "data_obs"])
     elif args.run_plot == "yes":
+        path = "chi_square_data/data_outfile.csv"
         procs_to_draw = ["stack", "total_bkg"]
-        for i in run_list:
+        for i in draw_list:
             procs_to_draw.append(i)
+            print("HELLO MY NAME IS ELDER PRICE")
             print(procs_to_draw)
             plot.subplot(0).Draw(procs_to_draw)
             if args.linear != True:
                 plot.subplot(1).Draw(procs_to_draw)
         plot.subplot(2).Draw(procs_to_draw[1:])
+        for i in draw_list:
+            #chi square 
+            print("\n Run " + i + ":")
+            plot.subplot(2).get_hist(i).Fit("pol0","0")
+
+            channelname = channel
+            run = i
+            variablename = variable
+            chi2 = str(plot.subplot(2).get_hist(i).GetFunction("pol0").GetChisquare())
+            num_dof = str(plot.subplot(2).get_hist(i).GetFunction("pol0").GetNDF())
+            p_0 = str(plot.subplot(2).get_hist(i).GetFunction("pol0").GetParameter(0)) + " +/- " + str(plot.subplot(2).get_hist(i).GetFunction("pol0").GetParError(0))
+            str_to_write = variablename + "," + run + "," + channelname + "," + chi2 + "," + num_dof +"," + p_0 + "\n"
+            if os.path.exists(path): 
+                with open(path , 'a') as f:
+                    f.write(str_to_write)
+            else:
+                with open(path , 'w') as f:
+                    f.write("variable,run,channel,chi2,dof,p_0\n")
+                    f.write(str_to_write)
             
 
     # create legends

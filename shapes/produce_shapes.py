@@ -431,7 +431,7 @@ def main(args):
                     )
                 ],
             }
-            if len(run_list) == 1:
+            """if len(run_list) == 1:
                 list_of_run_lists.append(run_list) 
                 print("THIS IS MY LIST OF RUN LISTS, ", list_of_run_lists)
             else:
@@ -442,35 +442,38 @@ def main(args):
                     print("THIS IS THE NUMBER AFTER AND IT IS COOL: ", temp_prev_run_number)
                 print("THIS IS MY LIST OF RUN LISTS, ", list_of_run_lists)
             for run_list in list_of_run_lists:
-                if run_list[0] == run_list[-1]:
-                    data_dict[run_list[0]] = [Unit(
-                        datasets["data"],
-                        [
-                            data_only_channel_selection(channel, era),
-                            run_selection(run_list[0]),
-                            data_process_selection(channel, era, run_list[0]),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )]
-                else:
-                    print("INITIAL: FINAL", run_list[0] + "-" + run_list[-1]),
-                    data_dict[run_list[0] + "-" + run_list[-1]] = [Unit(
-                            datasets["data"],
-                            [
-                                data_only_channel_selection(channel, era),
-                                run_group_selection(run_list[0], run_list[-1]),
-                                data_group_process_selection(channel, era, run_list)
-                            ],
-                            [
-                                control_binning[channel][v]
-                                for v in set(control_binning[channel].keys())
-                                & set(args.control_plot_set)
-                            ],
-                        )]
+                if run_list[0] == run_list[-1]:"""
+            for i in run_list:
+                data_dict[i] = [Unit(
+                    datasets["data"],
+                    [
+                        data_only_channel_selection(channel, era),
+                        #run_selection(run_list[0]),
+                        #data_process_selection(channel, era, run_list[0]),
+                        run_selection(i),
+                        data_process_selection(channel, era, i),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )]
+                #else:
+                #    print("INITIAL: FINAL", run_list[0] + "-" + run_list[-1]),
+                #    data_dict[run_list[0] + "-" + run_list[-1]] = [Unit(
+                #            datasets["data"],
+                #            [
+                #                data_only_channel_selection(channel, era),
+                #                run_group_selection(run_list[0], run_list[-1]),
+                #                data_group_process_selection(channel, era, run_list)
+                #            ],
+                #            [
+                #                control_binning[channel][v]
+                #                for v in set(control_binning[channel].keys())
+                #                & set(args.control_plot_set)
+                #            ],
+                #        )]
             return data_dict
 
         elif answer == "no":

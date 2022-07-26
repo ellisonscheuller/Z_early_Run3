@@ -91,7 +91,7 @@ files = {
         "mm": dict(
             {
                 "data": [
-                    "SingleMuon_Run2022B_355094_355680",
+                    "SingleMuon_Run2022B_355094_355769",
                 ],
             },
             **common_files_2018_UL
@@ -99,10 +99,7 @@ files = {
         "ee": dict(
             {
                 "data": [
-                    "EGamma_Run2018A-UL2018",
-                    "EGamma_Run2018B-UL2018",
-                    "EGamma_Run2018C-UL2018",
-                    "EGamma_Run2018D-UL2018",
+                    "EGamma_Run2022B_355094_355769",
                 ],
             },
             **common_files_2018_UL
@@ -110,7 +107,7 @@ files = {
         "mmet": dict(
             {
                 "data": [
-                    "SingleMuon_Run2022B_355094_355400",
+                    "SingleMuon_Run2022B_355094_355769",
                 ],
             },
             **common_files_2018_UL
@@ -118,10 +115,7 @@ files = {
         "emet": dict(
             {
                 "data": [
-                    "EGamma_Run2018A-UL2018",
-                    "EGamma_Run2018B-UL2018",
-                    "EGamma_Run2018C-UL2018",
-                    "EGamma_Run2018D-UL2018",
+                    "EGamma_Run2022B_355094_355769",
                 ],
             },
             **common_files_2018_UL
