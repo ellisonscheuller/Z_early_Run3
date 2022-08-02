@@ -6,10 +6,9 @@ ERA=$1
 INPUT=$2
 VAR=$3
 CAT=$4
-MATCH=$5
-RUN=$6
-CHANNEL=$7
-TAG=$8
+RUN=$5
+CHANNEL=$6
+TAG=$7
 
-python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --category-postfix ${CAT} --match_data ${MATCH} --run-plot ${RUN} --channels ${CHANNEL} --tag ${TAG}
+python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --category-postfix ${CAT} --run-plot ${RUN} --channels ${CHANNEL} --tag ${TAG}
 

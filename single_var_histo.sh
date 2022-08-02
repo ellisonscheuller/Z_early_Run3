@@ -13,10 +13,10 @@
    read answer
 
    #creating the run list
-   #run_list="355443 355444 355445 355558 355559 355679 355680 355768 355769 done"
-   run_list="355680 done"
-   #lumi_list="1.971790835 1.243983634 1.537414347 11.7548517 6.878012741 1.078718626 46.78980232 1.222612315 16.16789967 done"
-   lumi_list="46.78980232 done"
+   run_list="355443 355444 355445 355558 355559 355679 355680 355768 355769 done"
+   #run_list="355680 done"
+   lumi_list="1.971790835 1.243983634 1.537414347 11.7548517 6.878012741 1.078718626 46.78980232 1.222612315 16.16789967 done"
+   #lumi_list="46.78980232 done"
    echo Your run list has these numbers: $run_list
    echo Your lumi list has these numbers: $lumi_list
    export channel

@@ -622,7 +622,7 @@ def main(args):
             "zl",
             "ttl",
             # "vvl",
-            "w",
+            #"w",
         },
         "mmet": {
             "zl",

@@ -112,8 +112,8 @@ def MC_base_process_selection(channel, era):
     elif channel in ["ee"]:
         MC_base_process_weights = [
             ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
-            ("puweight", "puweight"),
-            ("id_wgt_ele_wpmedium_1*id_wgt_ele_wpmedium_2", "idweight"),
+            #("puweight", "puweight"),
+            #("id_wgt_ele_wpmedium_1*id_wgt_ele_wpmedium_2", "idweight"),
             # ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
             lumi_weight(era),
         ]

@@ -223,7 +223,8 @@ def main(info):
         #bkg_processes = ["W", "TTL", "ZL"]
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
     elif "ee" in channel:
-        bkg_processes = ["W", "TTL", "ZL"]
+        #bkg_processes = ["W", "TTL", "ZL"]
+        bkg_processes = ["TTL", "ZL"]
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
 
     legend_bkg_processes = copy.deepcopy(bkg_processes)
@@ -299,7 +300,7 @@ def main(info):
             if args.match_data == "True":
                 data_norm = plot.subplot(0).get_hist(i).Integral()
                 entry_number = plot.subplot(0).get_hist(i).GetEntries()
-                if entry_number > 50:
+                if entry_number > 0:
                     print(str(entry_number) + " " + i)
                     draw_list.append(i)
                 mc_norm = plot.subplot(0).get_hist("total_bkg").Integral()
@@ -414,6 +415,7 @@ def main(info):
             ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
         ymax = max(ymax_list)
         plot.subplot(0).setYlims(0, ymax*1.7)
+        #plot.subplot(0).setYlims(0,1)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
@@ -460,7 +462,8 @@ def main(info):
     plot.subplot(2).setGrid()
     plot.scaleYLabelSize(0.8)
     plot.scaleYTitleOffset(0.8)
-    plot.scaleXTitleSize(0.8)
+    plot.scaleXTitleOffset(1.5)
+    plot.scaleXTitleSize(0.5)
 
     # draw subplots. Argument contains names of objects to be drawn in corresponding order.
 
@@ -509,10 +512,7 @@ def main(info):
     # create legends
     suffix = ["", "_top"]
     for i in range(2):
-        if channel == "mmet":
-            plot.add_legend(width=0.5, height=0.12)
-        else:
-            plot.add_legend(width=0.625, height=0.15)
+        plot.add_legend(width=0.5, height=0.15)
         for process in legend_bkg_processes:
             plot.legend(i).add_entry(
                 0,
@@ -554,7 +554,8 @@ def main(info):
     elif "2018" in args.era:
         # plot.DrawLumi("XYZ fb^{-1} (2018, 13 TeV)")
         #plot.DrawLumi( str(run_lumi[run_numb]) + " fb^{-1} (2018, 13 TeV)")
-        plot.DrawLumi( "1 pb^{-1} (2022, 13.6 TeV)")
+        #plot.DrawLumi( "1 pb^{-1} (2022, 13.6 TeV)")
+        plot.DrawLumi("(2022, 13.6 TeV)")
     else:
         logger.critical("Era {} is not implemented.".format(args.era))
         raise Exception

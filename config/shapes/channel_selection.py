@@ -18,7 +18,7 @@ def channel_selection(channel, era):
             ("(pt_1>29.)", "acceptance"),
     #        ("(m_vis > 60. &&  m_vis < 120.)", "Z_mass_window"),
             ("(trg_single_ele32_1)", "trg_matching"),
-            ("extraelec_veto == 1", "lepton_veto"),
+            #("extraelec_veto == 1", "lepton_veto"),
             ("(abs(eta_1) < 2.4)", "eta_cut"),
             ("(sqrt(2.*pt_1*met_uncorrected*(1.-cos(phi_1 - metphi_uncorrected)))>40.)", "mt_cut"),
             #("(met_uncorrected>50.)", "met_cut"),
@@ -57,7 +57,7 @@ def data_only_channel_selection(channel, era):
         cuts = [
             ("(pt_1>29.)", "acceptance"),
             ("(trg_single_ele27_1)", "trg_matching"),
-            ("extraelec_veto == 1", "lepton_veto"),
+            #("extraelec_veto == 1", "lepton_veto"),
             ("(abs(eta_1) < 2.4)", "eta_cut"),
             ("(sqrt(2.*pt_1*met_uncorrected*(1.-cos(phi_1 - metphi_uncorrected)))>40.)", "mt_cut"),
         ]

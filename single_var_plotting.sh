@@ -19,5 +19,5 @@ then
         source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2022_"$channel"_"$rn_ber".root $variable $rn_ber $answer $channel earlyRun3$channel
     done
 else
-    source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2022_"$channel"_run.root $variable None $answer $channel earlyRun3$channel
+    source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2022_"$channel"_run.root $variable None "True" $answer $channel earlyRun3$channel
 fi
