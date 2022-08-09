@@ -1,5 +1,5 @@
 
-Framework to produce analysis histograms (shapes)
+Framework to produce Control Plots
 
 Before cloning the early Run3 analysis framework start the ssh agent:
 ```bash
@@ -14,11 +14,26 @@ git clone --recursive git@github.com:KIT-CMS/Z_early_Run3.git
 ```bash
 source utils/setup_root.sh
 ```
-2. For producing control shapes for ```m_vis``` an example command is:
+2. Go to 'make-histograms.sh' and make your changes according to your histogramming desires (comments to guide in the script)
+    - To define new variables not in the ntuple go to control_binning.py
+    - To change the binning/bounds go to control_binning.py
+    - To change the cuts go to channel_selection.py
+    - To change the MC weights go to process_selection.py
+    - To change the data weights (such as lumi scaling) go to data_selection.py
+    - To specify new file names for each sample go to file_names.py
+    - Everything else should be able to be modified in the bash script but if you want to add new features a good place to start is produce_shapes.py
+
+3. Run the histogramming code
 ```bash
-python shapes/produce_shapes.py --channels mm --output-file output/run3_crown_2018_mm --directory /ceph/rschmieder/run3/CROWN_tutorial/ntuples  --era 2018 --num-processes 2 --num-threads 2 --optimization-level 1 --control-plots --control-plot-set m_vis --ntuple_type crown --mm-friend-directory /ceph/rschmieder/run3/CROWN_tutorial/friends/crosssection
+. make-histograms.sh
 ```
-3. For plotting the control shapes open a new shell and execute:
+
+4. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
+    - To change your pdf slideshow go to presentation/control-plots-slides.tex
+    - To add logos for your pdf slideshow go to /logos
+    - To get your chi square data for each plot go to /chi_square_data
+
+5. Run the plotting code
 ```bash
-bash plotting/plot_shapes_control.sh 2018 output/run3_crown_2018_mm.root m_vis mm run3_tut
+. make-plots.sh
 ```

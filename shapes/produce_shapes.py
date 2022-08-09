@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 import logging
-import os
 import pickle
 import re
 import yaml
@@ -21,6 +20,7 @@ from config.shapes.channel_selection import channel_selection
 from config.shapes.channel_selection import data_only_channel_selection
 from config.shapes.run_selection import run_selection
 from config.shapes.run_selection import run_group_selection
+from config.shapes.group_runs import run_lumi_selection
 from config.shapes.file_names import files
 from config.shapes.process_selection import (
     DY_process_selection,
@@ -159,10 +159,37 @@ def parse_arguments():
         help="Produce shapes for control plots. Default is production of analysis shapes.",
     )
     parser.add_argument(
+        "--run-plot",
+        default=1,
+        help="If true this will stack all runs on that same plot rather than separate run by run plots",
+    )
+    parser.add_argument(
+        "--group-runs",
+        default=0,
+        help="If true this will group runs by luminosity which you can set below",
+    )
+    parser.add_argument(
         "--control-plot-set",
         default=minimal_control_plot_set,
         type=lambda varlist: [variable for variable in varlist.split(",")],
         help="Variables the shapes should be produced for.",
+    )
+    parser.add_argument(
+        "--total-lumi",
+        default=0.001,
+        help="Luminosity value of the total runs summed",
+    )
+    parser.add_argument(
+        "--run-list",
+        default='',
+        type=lambda runlist: [run_number for run_number in runlist.split(",")],
+        help="List of run numbers being used",
+    )
+    parser.add_argument(
+        "--lumi-list",
+        default='',
+        type=lambda lumilist: [lumi for lumi in lumilist.split(",")],
+        help="List of luminosities which correspond to the run numbers",
     )
     parser.add_argument(
         "--only-create-graphs",
@@ -197,77 +224,6 @@ def parse_arguments():
     )
     return parser.parse_args()
 
-answer = (os.environ["answer"])
-
-file_name = "temp.txt"
-lumi_file_name = "lumi.txt"
-text = open(file_name, "r")
-text_1 = open(lumi_file_name, "r")
-run_listy = text.read()
-lumi_listy = text_1.read()
-text.close()
-text_1.close()
-print(run_listy)
-print(type(run_listy))
-
-def Convert(string):
-    li = list(string.split(" "))
-    return li
-
-run_list = (Convert(run_listy))
-run_list = run_list[:-1]
-print(run_list)
-print(type(run_list))
-
-def Convert(string):
-    li = list(string.split(" "))
-    return li
-
-lumi_list = (Convert(lumi_listy))
-lumi_list = lumi_list[:-1]
-
-run_lumi = {run_list[i]: lumi_list[i] for i in range(len(run_list))}
-
-sum_lumi = 0
-run_dict_list = list()
-temp_prev_run_number = float(run_list[0])
-
-def run_lumi_selection(prev_run_number):
-    sum_lumi = 0
-    run_group_list = list()
-    i = 0
-    if len(run_list) == 1:
-        run_group_list.append(run_list[0])
-        return run_group_list
-    while i < len(run_list):
-        print("VAR:", i)
-        if float(prev_run_number) != float(run_list[0]):
-            if i == 0:
-                while float(run_list[i]) < float(prev_run_number):
-                    i+=1
-                    print(run_list[i])
-                i+=1
-        if len(run_group_list) == 0 and float (run_lumi[run_list[i]]) > 4.0:
-                run_group_list = list()
-                print("THE LIST IS CLEARED", run_group_list)
-                run_group_list.append(run_list[i])
-                return run_group_list
-        print("IT FINISHED:",run_list[i])
-        temp_var = run_lumi[run_list[i]]
-        sum_lumi+=float(temp_var)
-        if sum_lumi >= 4.0:
-            if float (run_lumi[run_list[i]]) > 4.0:
-                break
-            else:
-                run_group_list.append(run_list[i])
-                break
-        else:
-            run_group_list.append(run_list[i])
-        i+=1
-    print("THIS IS THE LIST YOU ARE LOOKING AT: ", run_group_list)
-    print("HERE IS THE SUM LUMI: ", sum_lumi)
-    return run_group_list
-
 def main(args):
     # Parse given arguments.
     friend_directories = {
@@ -288,6 +244,9 @@ def main(args):
     nominals[args.era] = {}
     nominals[args.era]["datasets"] = {}
     nominals[args.era]["units"] = {}
+    runPlot = bool(int(args.run_plot))
+    groupRuns = float(args.group_runs)
+    totalLumi = float(args.total_lumi)
 
     def get_nominal_datasets(era, channel):
         datasets = dict()
@@ -333,226 +292,140 @@ def main(args):
 
 
     def get_control_units(channel, era, datasets):
-
-        file_name = "temp.txt"
-        lumi_file_name = "lumi.txt"
-        text = open(file_name, "r")
-        text_1 = open(lumi_file_name, "r")
-        run_listy = text.read()
-        lumi_listy = text_1.read()
-        text.close()
-        text_1.close()
-        print(run_listy)
-        print(type(run_listy))
-
-        def Convert(string):
-            li = list(string.split(" "))
-            return li
-
-        run_list = (Convert(run_listy))
-        run_list = run_list[:-1]
-        print(run_list)
-        print(type(run_list))
-
-        def Convert(string):
-            li = list(string.split(" "))
-            return li
-
-        lumi_list = (Convert(lumi_listy))
-        lumi_list = lumi_list[:-1]
-
-        run_lumi = {run_list[i]: lumi_list[i] for i in range(len(run_list))}
-
-        sum_lumi = 0
-        run_dict_list = list()
-        list_of_run_lists = list()
+        run_list = args.run_list
+        lumi_list = args.lumi_list
+        run_lumi = {run_list[i]: float(lumi_list[i]) for i in range(len(run_list))}
         temp_prev_run_number = float(run_list[0])
-        print("YOOOOOO ,", temp_prev_run_number)
+        list_of_run_lists = list()
+        print("HALLO" + str(totalLumi))
 
-        if answer == "yes":
-            data_dict = {
-                "zl": [
-                    Unit(
-                        datasets["DY"],
-                        [
-                            channel_selection(channel, era),
-                            DY_process_selection(channel, era),
-                            ZL_process_selection(channel),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )
-                ],
-                "ttl": [
-                    Unit(
-                        datasets["TT"],
-                        [
-                            channel_selection(channel, era),
-                            TT_process_selection(channel, era),
-                            TTL_process_selection(channel),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )
-                ],
-                # "vvl": [
-                #     Unit(
-                #         datasets["VV"],
-                #         [
-                #             channel_selection(channel, era),
-                #             VV_process_selection(channel, era),
-                #             VVL_process_selection(channel),
-                #         ],
-                #         [
-                #             control_binning[channel][v]
-                #             for v in set(control_binning[channel].keys())
-                #             & set(args.control_plot_set)
-                #         ],
-                #     )
-                # ],
-                "w": [
-                    Unit(
-                        datasets["W"],
-                        [
-                            channel_selection(channel, era),
-                            W_process_selection(channel, era),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )
-                ],
-            }
-            """if len(run_list) == 1:
-                list_of_run_lists.append(run_list) 
-                print("THIS IS MY LIST OF RUN LISTS, ", list_of_run_lists)
-            else:
-                while temp_prev_run_number < float(run_list[-1]):
-                    list_of_run_lists.append(run_lumi_selection(temp_prev_run_number)) 
-                    print("THIS IS THE NUMBER OF ALL GREATNESS: ", temp_prev_run_number)
-                    temp_prev_run_number = float(list_of_run_lists[-1][-1])
-                    print("THIS IS THE NUMBER AFTER AND IT IS COOL: ", temp_prev_run_number)
-                print("THIS IS MY LIST OF RUN LISTS, ", list_of_run_lists)
-            for run_list in list_of_run_lists:
-                if run_list[0] == run_list[-1]:"""
-            for i in run_list:
-                data_dict[i] = [Unit(
-                    datasets["data"],
+        #adds the MC samples first to the dictionary of histograms to be made
+        data_dict = {
+            "zl": [
+                Unit(
+                    datasets["DY"],
                     [
-                        data_only_channel_selection(channel, era),
-                        #run_selection(run_list[0]),
-                        #data_process_selection(channel, era, run_list[0]),
-                        run_selection(i),
-                        data_process_selection(channel, era, i),
+                        channel_selection(channel, era),
+                        DY_process_selection(channel, era, runPlot, totalLumi),
+                        ZL_process_selection(channel),
                     ],
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
                         & set(args.control_plot_set)
                     ],
-                )]
-                #else:
-                #    print("INITIAL: FINAL", run_list[0] + "-" + run_list[-1]),
-                #    data_dict[run_list[0] + "-" + run_list[-1]] = [Unit(
-                #            datasets["data"],
-                #            [
-                #                data_only_channel_selection(channel, era),
-                #                run_group_selection(run_list[0], run_list[-1]),
-                #                data_group_process_selection(channel, era, run_list)
-                #            ],
-                #            [
-                #                control_binning[channel][v]
-                #                for v in set(control_binning[channel].keys())
-                #                & set(args.control_plot_set)
-                #            ],
-                #        )]
-            return data_dict
+                )
+            ],
+            "ttl": [
+                Unit(
+                    datasets["TT"],
+                    [
+                        channel_selection(channel, era),
+                        TT_process_selection(channel, era, runPlot, totalLumi),
+                        TTL_process_selection(channel),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+            # "vvl": [
+            #     Unit(
+            #         datasets["VV"],
+            #         [
+            #             channel_selection(channel, era),
+            #             VV_process_selection(channel, era),
+            #             VVL_process_selection(channel),
+            #         ],
+            #         [
+            #             control_binning[channel][v]
+            #             for v in set(control_binning[channel].keys())
+            #             & set(args.control_plot_set)
+            #         ],
+            #     )
+            # ],
+            "w": [
+                Unit(
+                    datasets["W"],
+                    [
+                        channel_selection(channel, era),
+                        W_process_selection(channel, era, runPlot, totalLumi),
+                    ],
+                    [
+                        control_binning[channel][v]
+                        for v in set(control_binning[channel].keys())
+                        & set(args.control_plot_set)
+                    ],
+                )
+            ],
+        }
 
-        elif answer == "no":
-            run_numb = (os.environ["rn_number"])
-            return {
-                "data": [
-                            Unit(
+        #sums the runs and returns data as its own histogram
+        if not runPlot:
+            data_dict["data"] = [Unit(
+                datasets["data"],
+                [
+                    data_only_channel_selection(channel, era),
+                ],
+                [
+                    control_binning[channel][v]
+                    for v in set(control_binning[channel].keys())
+                    & set(args.control_plot_set)
+                ],
+            )]
+        #seperates run by run and plots them seperatly
+        else:
+            if groupRuns:
+                while temp_prev_run_number < float(run_list[-1]):
+                    list_of_run_lists.append(run_lumi_selection(temp_prev_run_number, run_list, run_lumi, groupRuns)) 
+                    temp_prev_run_number = float(list_of_run_lists[-1][-1])
+                for run_list in list_of_run_lists:
+                    if run_list[0] == run_list[-1]:
+                        data_dict[run_list[0]] = [Unit(
+                            datasets["data"],
+                            [
+                                data_only_channel_selection(channel, era),
+                                run_selection(run_list[0]),
+                                data_process_selection(channel, era, run_list[0], run_lumi),
+                            ],
+                            [
+                                control_binning[channel][v]
+                                for v in set(control_binning[channel].keys())
+                                & set(args.control_plot_set)
+                            ],
+                        )]
+                    else:
+                        data_dict[run_list[0] + "-" + run_list[-1]] = [Unit(
                                 datasets["data"],
                                 [
                                     data_only_channel_selection(channel, era),
-                                    run_selection(run_numb)
+                                    run_group_selection(run_list[0], run_list[-1]),
+                                    data_group_process_selection(channel, era, run_list, run_lumi)
                                 ],
                                 [
                                     control_binning[channel][v]
                                     for v in set(control_binning[channel].keys())
                                     & set(args.control_plot_set)
                                 ],
-                            )
-                        ],
-                "zl": [
-                    Unit(
-                        datasets["DY"],
+                            )]
+            else:
+                for run_number in run_list:
+                    data_dict[run_number] = [Unit(
+                        datasets["data"],
                         [
-                            channel_selection(channel, era),
-                            DY_process_selection(channel, era),
-                            ZL_process_selection(channel),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )
-                ],
-                "ttl": [
-                    Unit(
-                        datasets["TT"],
-                        [
-                            channel_selection(channel, era),
-                            TT_process_selection(channel, era),
-                            TTL_process_selection(channel),
+                            data_only_channel_selection(channel, era),
+                            run_selection(run_number),
+                            data_process_selection(channel, era, run_number, run_lumi),
                         ],
                         [
                             control_binning[channel][v]
                             for v in set(control_binning[channel].keys())
                             & set(args.control_plot_set)
                         ],
-                    )
-                ],
-                # "vvl": [
-                #     Unit(
-                #         datasets["VV"],
-                #         [
-                #             channel_selection(channel, era),
-                #             VV_process_selection(channel, era),
-                #             VVL_process_selection(channel),
-                #         ],
-                #         [
-                #             control_binning[channel][v]
-                #             for v in set(control_binning[channel].keys())
-                #             & set(args.control_plot_set)
-                #         ],
-                #     )
-                # ],
-               "w": [
-                    Unit(
-                        datasets["W"],
-                        [
-                            channel_selection(channel, era),
-                            W_process_selection(channel, era),
-                        ],
-                        [
-                            control_binning[channel][v]
-                            for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
-                        ],
-                    )
-                ],
-            }
+                    )]
+        return data_dict
 
     # Step 1: create units and book actions
     for channel in args.channels:
@@ -565,31 +438,20 @@ def main(args):
             )
     um = UnitManager()
 
-    print("YOOOO HOOO: ", nominals[args.era]["units"][channel])
-    looping_dict_for_run_ranges = nominals[args.era]["units"][channel]
-
     # available sm processes are: {"data", "emb", "ztt", "zl", "zj", "ttt", "ttl", "ttj", "vvt", "vvl", "vvj", "w", "ggh", "qqh","vh","tth"}
     # necessary processes for analysis with emb and ff method are: {"data", "emb", "zl", "ttl","ttt", "vvl","ttt" "ggh", "qqh","vh","tth"}
     if args.process_selection is None:
-        print("ZEBRAS")
-        run_nums = set()
-        run_group_list_for_exporting = ""
-        f = open("run_group.txt", "w")
-        f.truncate()
-        for run_key in looping_dict_for_run_ranges.keys():
-            run_nums.add(run_key)
-            if run_key != "zl" and run_key != "ttl" and run_key != "vvl" and run_key != "w":
-                run_group_list_for_exporting+=run_key + " "
+        if runPlot:
+            run_nums = set()
+            for run_key in nominals[args.era]["units"][channel].keys():
+                run_nums.add(run_key)
 
-        f.write(run_group_list_for_exporting)
-        f.close()
-
-        if answer == "yes":
+        if runPlot:
             procS = {
                 *run_nums,
                 "zl",
                 "ttl",
-                "vvl",
+                #"vvl",
                 "w",
             }
         else:
@@ -597,7 +459,7 @@ def main(args):
                 "data",
                 "zl",
                 "ttl",
-                "vvl",
+                #"vvl",
                 "w",
             }
 
@@ -606,17 +468,28 @@ def main(args):
 
     print("Processes to be computed: ", procS)
     dataS = set()
-    for run_key in looping_dict_for_run_ranges.keys():
-        if run_key != "zl" and run_key != "ttl" and run_key != "vvl" and run_key != "w":
-            dataS.add(run_key)
-    print("LOOK HERE: ", dataS)
-    print(type(dataS))
+    if runPlot:
+        for run_key in nominals[args.era]["units"][channel].keys():
+            if run_key != "zl" and run_key != "ttl" and run_key != "vvl" and run_key != "w":
+                dataS.add(run_key)
+    else: dataS = {"data"} & procS
+
+    #exports the names of the data plots to a text file
+    plot_names = ["{}\n".format(plot_name) for plot_name in dataS]
+    with open(r'data_plot_names.txt', 'w') as fp:
+        fp.writelines(plot_names)
+
+    # data_names_file = open("data_plot_names.txt", "w")
+    # for plot_name in dataS: data_names_file.write(plot_name + "\n") 
+    # data_names_file.close()
+
+
     simulatedProcsDS = {
         "mm": {
             "zl",
             "ttl",
             # "vvl",
-            #"w",
+            "w",
         },
         "ee": {
             "zl",
@@ -637,6 +510,7 @@ def main(args):
             "w",
         }
     }
+
     for ch_ in args.channels:
         um.book(
             [
@@ -693,7 +567,6 @@ def main(args):
         r_manager = RunManager(graphs)
         r_manager.run_locally(output_file, args.num_processes, args.num_threads)
     return
-
 
 if __name__ == "__main__":
     # from multiprocessing import set_start_method

@@ -1,7 +1,7 @@
 from pickletools import float8
 from ntuple_processor.utils import Selection
 
-#MC channel selection
+#MC channel selection (can be combined with data_only_channel_selection when the trigger matching is the same)
 def channel_selection(channel, era):
     if "mmet" in channel:
         cuts = [
