@@ -14,7 +14,7 @@ git clone --recursive git@github.com:KIT-CMS/Z_early_Run3.git
 ```bash
 source utils/setup_root.sh
 ```
-2. Make a directory called output to store histograms:
+2. Make a directory called "output" to store histograms:
 ```bash
 mkdir output
 ```
