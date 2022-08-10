@@ -27,13 +27,14 @@ source utils/setup_root.sh
 ```bash
 . make-histograms.sh
 ```
+4. Open up a new terminal for the plotting
 
-4. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
+5. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
     - To change your pdf slideshow go to presentation/control-plots-slides.tex
     - To add logos for your pdf slideshow go to /logos
     - To get your chi square data for each plot go to /chi_square_data
 
-5. Run the plotting code
+6. Run the plotting code
 ```bash
 . make-plots.sh
 ```
