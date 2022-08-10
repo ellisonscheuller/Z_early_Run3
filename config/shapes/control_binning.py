@@ -1,5 +1,6 @@
 from ntuple_processor import Histogram
 import os 
+<<<<<<< HEAD
 import numpy as np
 
 variable_list = os.environ["variable_list"].split(",")
@@ -91,10 +92,26 @@ def renamingVariable(var):
         out = "{base}*(q_1 > 0) -1e9*(q_1 < 0)".format(base=base)
       elif "_neg" in var:
         out = "{base}*(q_1 < 0) -1e9*(q_1 > 0)".format(base=base)
+=======
+
+var_name = (os.environ["variable"])
+str_list = os.environ["x"]
+
+def Convert(string):
+  li = list(string.split(","))
+  return li
+
+histo_list = (Convert(str_list))
+histo_list = list(map(float, histo_list))
+
+
+minimal_control_plot_set = {var_name}
+>>>>>>> 1577b94623385d834f3a2c6dee21cb4b3712f4bf
 
     assert out != None
     return out
 
+<<<<<<< HEAD
 for i in range(len(variable_list)):
   var_name = renamingVariable(variable_list[i])
   histo_bin_list=list()
@@ -109,3 +126,16 @@ for i in range(len(variable_list)):
   
   #control binning
   control_binning[channel][variable_list[i]]=Histogram(variable_list[i], var_name, histo_bin_list)
+=======
+control_binning = {
+  "mmet": {var_name:Histogram(var_name, var_name, histo_list)},
+  "emet": {var_name:Histogram(var_name, var_name, histo_list)},
+  "mt": {var_name:Histogram(var_name, var_name, histo_list)},
+  "em": {var_name:Histogram(var_name, var_name, histo_list)},
+  "et": {var_name:Histogram(var_name, var_name, histo_list)},
+  "tt": {var_name:Histogram(var_name, var_name, histo_list)},
+  "mm": {var_name:Histogram(var_name, var_name, histo_list)},
+  "me": {var_name:Histogram(var_name, var_name, histo_list)},
+  "ee": {var_name:Histogram(var_name, var_name, histo_list)},
+}
+>>>>>>> 1577b94623385d834f3a2c6dee21cb4b3712f4bf
