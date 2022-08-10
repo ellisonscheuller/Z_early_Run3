@@ -14,7 +14,11 @@ git clone --recursive git@github.com:KIT-CMS/Z_early_Run3.git
 ```bash
 source utils/setup_root.sh
 ```
-2. Go to 'make-histograms.sh' and make your changes according to your histogramming desires (comments to guide in the script)
+2. Make a directory called output to store histograms:
+```bash
+mkdir output
+```
+3. Go to 'make-histograms.sh' and make your changes according to your histogramming desires (comments to guide in the script)
     - To define new variables not in the ntuple go to control_binning.py
     - To change the binning/bounds go to control_binning.py
     - To change the cuts go to channel_selection.py
@@ -23,7 +27,7 @@ source utils/setup_root.sh
     - To specify new file names for each sample go to file_names.py
     - Everything else should be able to be modified in the bash script but if you want to add new features a good place to start is produce_shapes.py
 
-3. Run the histogramming code
+4. Run the histogramming code
 ```bash
 . make-histograms.sh
 ```
@@ -52,14 +56,14 @@ python shapes/produce_shapes.py --channels mm --output-file output/earlyRun3_cro
 - $run_list can be anything if you are not doing run by run histogramming and if runPlot is true you list your run numbers here seperated by commas
 - $lumi_list has the corresponding luminosities to the run numbers (keep them in the same order respectively)
 
-4. Open up a new terminal for the plotting
+5. Open up a new terminal for the plotting
 
-5. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
+6. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
     - To change your pdf slideshow go to presentation/control-plots-slides.tex
     - To add logos for your pdf slideshow go to /logos
     - To get your chi square data for each plot go to /chi_square_data
 
-6. Run the plotting code
+7. Run the plotting code
 ```bash
 . make-plots.sh
 ```
