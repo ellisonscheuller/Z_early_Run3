@@ -1,0 +1,12 @@
+Using LCG 95
+Exception AttributeError: "'Rootfile_parser' object has no attribute '_rootfilename'" in <bound method Rootfile_parser.__del__ of <Dumbledraw.rootfile_parser_inputshapes.Rootfile_parser object at 0x7f6da6720990>> ignored
+Exception AttributeError: Traceback (most recent call last):
+"  File "plotting/plot_shapes_control.py", line 566, in <module>
+'Rootfil    epool.map(main, infolist)
+_pars  File "/cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-centos7-gcc8-opt/lib/python2.7/site-packages/multiprocessing/pool.py", line 148, in map
+er' ob    ject return self.map_async(func, iterable, chunksize).get()
+has   File "/cvmfs/sft.cern.ch/lcg/views/LCG_95/x86_64-centos7-gcc8-opt/lib/python2.7/site-packages/multiprocessing/pool.py", line 422, in get
+no attribu    traise self._value
+e '_rootfTypeErrori: __init__() takes exactly 6 arguments (3 given)l
+ename'" in <bound method Rootfile_parser.__del__ of <Dumbledraw.rootfile_parser_inputshapes.Rootfile_parser object at 0x7f6da6720990>> ignored
+Exception 
