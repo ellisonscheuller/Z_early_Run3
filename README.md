@@ -27,6 +27,31 @@ source utils/setup_root.sh
 ```bash
 . make-histograms.sh
 ```
+* If you would prefer to type all of this in the terminal use here is the command:
+```bash
+python shapes/produce_shapes.py --channels $channel --output-file output/earlyRun3_crown_2022_"$channel"\
+   --directory /ceph/moh/CROWN_samples/EarlyRun3_V11/ntuples\
+   --$channel-friend-directory /ceph/moh/CROWN_samples/EarlyRun3_V11/friends/crosssection\
+   --era 2018 --num-processes 16 --num-threads 16 --optimization-level 1 --control-plots --run-plot $runPlot --group-runs $groupRuns\
+   --control-plot-set $variable_list --total-lumi $totalLuminosity --run-list $run_list --lumi-list $lumi_list --ntuple_type crown --skip-systematic-variations
+```
+Example:
+```bash
+python shapes/produce_shapes.py --channels mm --output-file output/earlyRun3_crown_2022_mm\
+   --directory /ceph/moh/CROWN_samples/EarlyRun3_V11/ntuples\
+   --mm-friend-directory /ceph/moh/CROWN_samples/EarlyRun3_V11/friends/crosssection\
+   --era 2018 --num-processes 16 --num-threads 16 --optimization-level 1 --control-plots --run-plot 1 --group-runs 5.2\
+   --control-plot-set pt_1,pt_2,eta_1,eta_2,m_vis --total-lumi 0.088 --run-list 355443,355444,355445\
+   --lumi-list 1.971790835,1.243983634,1.537414347 --ntuple_type crown --skip-systematic-variations
+```
+- $channel takes in either a list of channels (mm,ee,mmet,emet) and histograms the same variables for all or you can histogram specific variables for each channel by going to make-histograms.sh and reading the comments, then run one channel at a time.
+- $runPlot is 1 for a run by run plot and 0 to just sum all the runs
+- $groupRuns is 0 to not group runs by luminosity and any luminosity value to choose the max for grouping luminosities
+- $variable_list takes in a list seperated by comments of variables you want (suggested to go to make-histograms.sh to store big lists of variables)
+- $totalLuminosity can be anything if you are doing run by run histograms because it scales everything to 1 pb-1 but for the summed run control plots you should put your total luminosity here
+- $run_list can be anything if you are not doing run by run histogramming and if runPlot is true you list your run numbers here seperated by commas
+- $lumi_list has the corresponding luminosities to the run numbers (keep them in the same order respectively)
+
 4. Open up a new terminal for the plotting
 
 5. Go to 'make-plots.sh' and make your changes according to your plotting desires (comments to guide in the script)
@@ -37,4 +62,27 @@ source utils/setup_root.sh
 6. Run the plotting code
 ```bash
 . make-plots.sh
+```
+
+* If you would prefer to type all of this in the terminal use here is the command:
+```bash
+source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2022_"$channel".root $variable_list None $matchData $lumiLabel $latex $channel earlyRun3$channel
+```
+Example:
+```bash
+source plotting/plot_shapes_control.sh 2018 output/earlyRun3_crown_2022_mm.root pt_1,pt_2,eta_1,eta_2,m_vis None 1 0.088 1 mm earlyRun3mm
+```
+- $channel takes in either a list of channels (mm,ee,mmet,emet) and plots the same variables for all or you can plot specific variables for each channel by going to make-plots.sh and reading the comments, then run one channel at a time.
+- $variable_list takes in a list seperated by comments of variables you want (suggested to go to make-plots.sh to store big lists of variables)
+- $matchData is 1 to normalize data to MC and 0 to turn this feature off
+- $lumiLabel if what luminosity will be displayed on the plot (match $totalLuminosity or 0 if you are making a run plot
+- $latex is 1 to write the plots to a latex file that will make a slideshow pdf and 0 to turn this feature off
+
+If you did not use . make-plots.sh and used the terminal instead you must also run the following:
+```bash
+export LATEX=/ceph/mlink/texlive/2022
+export PATH=$LATEX/bin/x86_64-linux:$PATH
+export MANPATH=$LATEX/texmf-dist/doc/man:$MANPATH
+export INFOPATH=$LATEX/texmf-dist/doc/info:$INFOPATH
+pdflatex presentation/control-plots-slides.tex
 ```
