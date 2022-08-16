@@ -432,7 +432,7 @@ def main(args):
 
     # Step 1: create units and book actions
     for channel in args.channels:
-        control_binning = get_control_binning(channel, variable_list, seperateVariable)
+        control_binning = get_control_binning(channel, variable_list)
         print(control_binning)
         nominals[args.era]["datasets"][channel] = get_nominal_datasets(
             args.era, channel

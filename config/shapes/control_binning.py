@@ -55,7 +55,7 @@ def renamingVariable(var, channel):
 
   #background isolation
   if "_iso5" in var: selection = selection + "*(iso_1 > 0.20 && iso_1 < 0.25)"
-  elif "_iso6" in var: selection = selection + "*(iso_1 > 0.25 && iso_1 < 0.30)
+  elif "_iso6" in var: selection = selection + "*(iso_1 > 0.25 && iso_1 < 0.30)"
   elif "_iso7" in var: selection = selection + "*(iso_1 > 0.30 && iso_1 < 0.35)"
   elif "_iso8" in var: selection = selection + "*(iso_1 > 0.35 && iso_1 < 0.40)"
   elif "_iso9" in var: selection = selection + "*(iso_1 > 0.40 && iso_1 < 0.45)"
@@ -76,7 +76,6 @@ def renamingVariable(var, channel):
     elif "_endcap" in var: selection = selection + "*(abs(eta_{idx}) > 1.2)".format(idx=idx)
 
   full_var = "{base}*({sel}) -1.e9*(!({sel}))".format(base=base, sel=selection)
-  print(full_var)
   #assert full_var != None
   return full_var
 
@@ -98,7 +97,7 @@ def seperateVariables(input_list):
   return variable_list
 
 
-def get_control_binning(channel, variable_list, seperateVariable):
+def get_control_binning(channel, variable_list):
   control_binning = {channel:dict()}
   for i in range(len(variable_list)):
     var_name = renamingVariable(variable_list[i], channel)
