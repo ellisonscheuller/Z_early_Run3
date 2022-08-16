@@ -32,6 +32,7 @@ def lumi_weight(era, runPlot, totalLumi):
         # lumi = "31.75"
         # lumi = "13.98"  # Run2018A
         lumi = "0.001" if runPlot else str(totalLumi)
+        #lumi = "59.8"
     else:
         raise ValueError("Given era {} not defined.".format(era))
     return ("{} * 1000.0".format(lumi), "lumi")
@@ -41,38 +42,34 @@ def MC_base_process_selection(channel, era, runPlot, totalLumi):
     if channel in ["mmet"]:
         MC_base_process_weights = [
             ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
-            #("puweight", "puweight"),
-            #("id_wgt_mu_1", "idweight"),
-            #("iso_wgt_mu_1", "isoweight"),
-           # ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_mu_1", "idweight"),
+            ("iso_wgt_mu_1", "isoweight"),
             lumi_weight(era, runPlot, totalLumi),
         ]
         return Selection(name="MC base", weights=MC_base_process_weights)
     elif channel in ["emet"]:
         MC_base_process_weights = [
             ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
-            #("puweight", "puweight"),
-            #("id_wgt_ele_wpmedium_1", "idweight"),
-            # ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_ele_wpmedium_1", "idweight"),
             lumi_weight(era, runPlot, totalLumi),
         ]
         return Selection(name="MC base", weights=MC_base_process_weights)
     elif channel in ["mm"]:
         MC_base_process_weights = [
             ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
-            #("puweight", "puweight"),
-            #("id_wgt_mu_1*id_wgt_mu_2", "idweight"),
-            #("iso_wgt_mu_1*iso_wgt_mu_2", "isoweight"),
-            # ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_mu_1*id_wgt_mu_2", "idweight"),
+            ("iso_wgt_mu_1*iso_wgt_mu_2", "isoweight"),
             lumi_weight(era, runPlot, totalLumi),
         ]
         return Selection(name="MC base", weights=MC_base_process_weights)
     elif channel in ["ee"]:
         MC_base_process_weights = [
             ("genweight*sumwWeight*crossSectionPerEventWeight", "normWeight"),
-            #("puweight", "puweight"),
-            #("id_wgt_ele_wpmedium_1*id_wgt_ele_wpmedium_2", "idweight"),
-            # ("numberGeneratedEventsWeight", "numberGeneratedEventsWeight"),
+            ("puweight", "puweight"),
+            ("id_wgt_ele_wpmedium_1*id_wgt_ele_wpmedium_2", "idweight"),
             lumi_weight(era, runPlot, totalLumi),
         ]
         return Selection(name="MC base", weights=MC_base_process_weights)

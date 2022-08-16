@@ -17,7 +17,6 @@ from ntuple_processor import (
 )
 
 from config.shapes.channel_selection import channel_selection
-from config.shapes.channel_selection import data_only_channel_selection
 from config.shapes.run_selection import run_selection
 from config.shapes.run_selection import run_group_selection
 from config.shapes.group_runs import run_lumi_selection
@@ -42,7 +41,7 @@ from config.shapes.variations import (
     mu_id_weight,
 )
 
-from config.shapes.control_binning import control_binning, minimal_control_plot_set
+from config.shapes.control_binning import get_control_binning, seperateVariables
 
 logger = logging.getLogger("")
 
@@ -169,8 +168,13 @@ def parse_arguments():
         help="If true this will group runs by luminosity which you can set below",
     )
     parser.add_argument(
+        "--seperate-variables",
+        default=0,
+        help="If true this will seperate variables",
+    )
+    parser.add_argument(
         "--control-plot-set",
-        default=minimal_control_plot_set,
+        default="pt_1",
         type=lambda varlist: [variable for variable in varlist.split(",")],
         help="Variables the shapes should be produced for.",
     )
@@ -291,13 +295,12 @@ def main(args):
         return datasets
 
 
-    def get_control_units(channel, era, datasets):
+    def get_control_units(channel, era, datasets, control_binning):
         run_list = args.run_list
         lumi_list = args.lumi_list
         run_lumi = {run_list[i]: float(lumi_list[i]) for i in range(len(run_list))}
         temp_prev_run_number = float(run_list[0])
         list_of_run_lists = list()
-        print("HALLO" + str(totalLumi))
 
         #adds the MC samples first to the dictionary of histograms to be made
         data_dict = {
@@ -312,7 +315,7 @@ def main(args):
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
+                        & set(variable_list)
                     ],
                 )
             ],
@@ -327,7 +330,7 @@ def main(args):
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
+                        & set(variable_list)
                     ],
                 )
             ],
@@ -342,7 +345,7 @@ def main(args):
             #         [
             #             control_binning[channel][v]
             #             for v in set(control_binning[channel].keys())
-            #             & set(args.control_plot_set)
+            #             & set(variable_list)
             #         ],
             #     )
             # ],
@@ -356,7 +359,7 @@ def main(args):
                     [
                         control_binning[channel][v]
                         for v in set(control_binning[channel].keys())
-                        & set(args.control_plot_set)
+                        & set(variable_list)
                     ],
                 )
             ],
@@ -367,12 +370,12 @@ def main(args):
             data_dict["data"] = [Unit(
                 datasets["data"],
                 [
-                    data_only_channel_selection(channel, era),
+                    channel_selection(channel, era),
                 ],
                 [
                     control_binning[channel][v]
                     for v in set(control_binning[channel].keys())
-                    & set(args.control_plot_set)
+                    & set(variable_list)
                 ],
             )]
         #seperates run by run and plots them seperatly
@@ -386,28 +389,28 @@ def main(args):
                         data_dict[run_list[0]] = [Unit(
                             datasets["data"],
                             [
-                                data_only_channel_selection(channel, era),
+                                channel_selection(channel, era),
                                 run_selection(run_list[0]),
                                 data_process_selection(channel, era, run_list[0], run_lumi),
                             ],
                             [
                                 control_binning[channel][v]
                                 for v in set(control_binning[channel].keys())
-                                & set(args.control_plot_set)
+                                & set(variable_list)
                             ],
                         )]
                     else:
                         data_dict[run_list[0] + "-" + run_list[-1]] = [Unit(
                                 datasets["data"],
                                 [
-                                    data_only_channel_selection(channel, era),
+                                    channel_selection(channel, era),
                                     run_group_selection(run_list[0], run_list[-1]),
                                     data_group_process_selection(channel, era, run_list, run_lumi)
                                 ],
                                 [
                                     control_binning[channel][v]
                                     for v in set(control_binning[channel].keys())
-                                    & set(args.control_plot_set)
+                                    & set(variable_list)
                                 ],
                             )]
             else:
@@ -415,26 +418,28 @@ def main(args):
                     data_dict[run_number] = [Unit(
                         datasets["data"],
                         [
-                            data_only_channel_selection(channel, era),
+                            channel_selection(channel, era),
                             run_selection(run_number),
                             data_process_selection(channel, era, run_number, run_lumi),
                         ],
                         [
                             control_binning[channel][v]
                             for v in set(control_binning[channel].keys())
-                            & set(args.control_plot_set)
+                            & set(variable_list)
                         ],
                     )]
         return data_dict
 
     # Step 1: create units and book actions
     for channel in args.channels:
+        control_binning = get_control_binning(channel, variable_list, seperateVariable)
+        print(control_binning)
         nominals[args.era]["datasets"][channel] = get_nominal_datasets(
             args.era, channel
         )
         if args.control_plots:
             nominals[args.era]["units"][channel] = get_control_units(
-                channel, args.era, nominals[args.era]["datasets"][channel]
+                channel, args.era, nominals[args.era]["datasets"][channel], control_binning
             )
     um = UnitManager()
 
@@ -572,6 +577,9 @@ if __name__ == "__main__":
     # from multiprocessing import set_start_method
     # set_start_method("spawn")
     args = parse_arguments()
+    seperateVariable = bool(int(args.seperate_variables))
+    if seperateVariable: variable_list = seperateVariables(args.control_plot_set)
+    else: variable_list = args.control_plot_set
     if ".root" in args.output_file:
         log_file = args.output_file.replace(".root", ".log")
     else:

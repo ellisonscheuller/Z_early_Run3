@@ -52,6 +52,11 @@ def parse_arguments():
         help="When this it true it will normalize the data to the MC"
     )
     parser.add_argument(
+        "--seperate-variables", 
+        default=0,
+        help="When this is true it will seperate variables based off suffixes you assign"
+    )
+    parser.add_argument(
         "--lumi-label", 
         type=str,
         default=None,
@@ -204,7 +209,7 @@ def main(info):
                 bkg_processes = ["VVL", "W", "TTL", "ZL", "EMB"]
 
     if "mmet" in channel:
-        #bkg_processes = ["ZL", "TTL"]
+        # bkg_processes = ["ZL", "TTL"]
         bkg_processes = ["ZL", "TTL", "W"]
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
     elif "emet" in channel:
@@ -212,10 +217,10 @@ def main(info):
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
     elif "mm" in channel:
         bkg_processes = ["TTL", "ZL"]
-        #bkg_processes = ["W", "TTL", "ZL"]
+        # bkg_processes = ["W", "TTL", "ZL"]
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
     elif "ee" in channel:
-        #bkg_processes = ["W", "TTL", "ZL"]
+        # bkg_processes = ["W", "TTL", "ZL"]
         bkg_processes = ["TTL", "ZL"]
         # bkg_processes = ["VVL", "W", "TTL", "ZL"]
 
@@ -347,24 +352,24 @@ def main(info):
     # plot.subplot(2).setYlims(0.75, 1.55)
     plot.subplot(2).setYlims(0.00, 2)
     if channel == "mmet":
-        #plot.subplot(0).setLogY()
+        plot.subplot(0).setLogY()
         #ymax = plot.subplot(0).get_hist("355206").GetMaximum()
         #plot.subplot(0).setYlims(0, ymax*1.5)
         ymax_list = list()
         for i in plot_names:
             ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
         ymax = max(ymax_list)
-        plot.subplot(0).setYlims(0, ymax*1.7)
+        plot.subplot(0).setYlims(0, ymax*20000000)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
         # plot.subplot(2).setXlims(50, 150)
     elif channel == "emet":
-        #plot.subplot(0).setLogY()
+        plot.subplot(0).setLogY()
         ymax_list = list()
         for i in plot_names:
             ymax_list.append(plot.subplot(0).get_hist(i).GetMaximum())
         ymax = max(ymax_list)
-        plot.subplot(0).setYlims(0, ymax*1.7)
+        plot.subplot(0).setYlims(0, ymax*20000000)
         #plot.subplot(0).setYlims(0,1)
         # plot.subplot(0).setXlims(50, 150)
         # plot.subplot(1).setXlims(50, 150)
@@ -396,8 +401,9 @@ def main(info):
         plot.subplot(1).setYlabel("")  # otherwise number labels are not drawn on axis
         #plot.subplot(1).setLogY()
     if variable != None:
-        if variable in styles.x_label_dict[channel]:
-            x_label = styles.x_label_dict[channel][variable]
+        xLabelName = variable.replace("_barrel", "").replace("_endcap", "").replace("_pos", "").replace("_neg", "").replace("_nv015", "").replace("_nv1530", "").replace("_nv3045", "").replace("_isoSR", "").replace("_iso5", "").replace("_iso6", "").replace("_iso7", "").replace("_iso8", "").replace("_iso9", "").replace("_iso10", "").replace("_iso11", "").replace("_iso12", "").replace("_iso13", "")
+        if xLabelName in styles.x_label_dict[channel]:
+            x_label = styles.x_label_dict[channel][xLabelName]
         else:
             x_label = variable
         plot.subplot(2).setXlabel(x_label)
@@ -460,7 +466,7 @@ def main(info):
             )
         plot.legend(i).add_entry(0, "total_bkg", "Bkg. stat. unc.", "f")
         for index in plot_names:
-            data_label_name = "Observed" if plot_names[0] == "data" else "Run "+ index
+            data_label_name = "Observed" if plot_names[0] == "data" else "Run " + index
             plot.legend(i).add_entry(0, index, data_label_name, "PE2L")
         plot.legend(i).setNColumns(2)
     plot.legend(0).Draw()
@@ -541,11 +547,27 @@ def main(info):
         )
     )
 
+#function that seperates the variables just like in produce shapes
+def seperateVariables(input_list):
+    charge_list=["_pos", "_neg"]
+    eta_list=["_barrel", "_endcap"]
+    iso_list=["_isoSR","_iso5","_iso6","_iso7","_iso8","_iso9","_iso10","_iso11","_iso12","_iso13"]
+    npv_list=["_npv015", "_npv1530", "_npv3045"]
+    variable_list = list()
+    for var in input_list:
+        for charge in charge_list:
+            for eta in eta_list:
+                for iso in iso_list:
+                    variable_list.append(var+charge+eta+iso)
+    return variable_list
+
 
 if __name__ == "__main__":
     args = parse_arguments()
     setup_logging("{}_plot_shapes.log".format(args.era), logging.DEBUG)
     variables = args.variables.split(",")
+    seperateVariable = bool(int(args.seperate_variables))
+    if seperateVariable: variables = seperateVariables(variables)
     channels = args.channels.split(",")
     writeLatex = bool(int(args.write_to_latex))
     matchData = bool(int(args.match_data))

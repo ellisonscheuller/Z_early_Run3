@@ -7,10 +7,10 @@ INPUT=$2
 VAR=$3
 CAT=$4
 MATCH=$5
-LABEL=$6
-LATEX=$7
-CHANNEL=$8
-TAG=$9
+SEPVAR=$6
+LABEL=$7
+LATEX=$8
+CHANNEL=$9
+TAG=${10}
 
-python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --category-postfix ${CAT} --match-data ${MATCH} --lumi-label ${LABEL} --write-to-latex ${LATEX} --channels ${CHANNEL} --tag ${TAG}
-
+python plotting/plot_shapes_control.py -l --era Run${ERA} --input ${INPUT} --variables ${VAR} --category-postfix ${CAT} --match-data ${MATCH} --seperate-variables ${SEPVAR} --lumi-label ${LABEL} --write-to-latex ${LATEX} --channels ${CHANNEL} --tag ${TAG}
